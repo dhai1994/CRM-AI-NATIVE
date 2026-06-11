@@ -6,6 +6,7 @@ import {
   createCampaign,
   getCampaigns,
   updateCampaignStatus,
+  getCampaignById,
 } from "../controllers/campaignController.js";
 
 const router =
