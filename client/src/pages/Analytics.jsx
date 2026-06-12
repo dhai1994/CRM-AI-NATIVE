@@ -1,161 +1,252 @@
-// src/pages/Analytics.jsx
 import { useEffect, useState } from "react";
 import API from "../api/axios";
+import Sidebar from "../components/Sidebar";
 import CustomerPieChart from "../components/CustomerPieChart";
 import RevenueBarChart from "../components/RevenueBarChart";
 
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATED COUNTER
+═══════════════════════════════════════════════════════════════ */
+function AnimatedCounter({ value, prefix = "", suffix = "", duration = 1200 }) {
+  const [display, setDisplay] = useState(0);
+  useEffect(() => {
+    const numeric = parseFloat(String(value).replace(/[^0-9.]/g, "")) || 0;
+    let current = 0;
+    const step = numeric / (duration / 16);
+    const timer = setInterval(() => {
+      current += step;
+      if (current >= numeric) { current = numeric; clearInterval(timer); }
+      setDisplay(Math.floor(current));
+    }, 16);
+    return () => clearInterval(timer);
+  }, [value, duration]);
+  return <span>{prefix}{display.toLocaleString("en-IN")}{suffix}</span>;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   KPI CARD
+═══════════════════════════════════════════════════════════════ */
+function KpiCard({ label, value, icon, accent, prefix = "", suffix = "" }) {
+  const [hovered, setHovered] = useState(false);
+  const numeric = parseFloat(String(value).replace(/[^0-9.]/g, "")) || 0;
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        flex: 1, minWidth: "160px",
+        background: hovered ? `radial-gradient(ellipse at 0% 50%,${accent}14 0%,#141414 70%)` : "#141414",
+        border: `1px solid ${hovered ? "#2a2a2a" : "#1f1f1f"}`,
+        borderRadius: "12px", padding: "20px 22px",
+        display: "flex", alignItems: "center", gap: "14px",
+        transition: "all 220ms cubic-bezier(0.16,1,0.3,1)",
+        transform: hovered ? "translateY(-3px)" : "translateY(0)",
+        boxShadow: hovered ? "0 12px 40px rgba(0,0,0,0.5)" : "none",
+        cursor: "default",
+      }}
+    >
+      <span style={{ fontSize: "26px", filter: `drop-shadow(0 0 8px ${accent})`, lineHeight: 1 }}>{icon}</span>
+      <div>
+        <p style={{ fontSize: "11px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", color: "#555", margin: "0 0 4px" }}>{label}</p>
+        <p style={{ fontSize: "clamp(20px,2.5vw,28px)", fontWeight: 700, color: "#fff", margin: 0, fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>
+          <AnimatedCounter value={numeric} prefix={prefix} suffix={suffix} />
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CHART WRAPPER CARD
+═══════════════════════════════════════════════════════════════ */
+function ChartCard({ title, icon, children }) {
+  return (
+    <div style={{
+      background: "#0f0f0f", border: "1px solid #1f1f1f", borderRadius: "16px",
+      overflow: "hidden", flex: 1, minWidth: "280px",
+      animation: "fadeUp 0.4s ease both",
+    }}>
+      <div style={{ padding: "18px 22px 14px", borderBottom: "1px solid #1a1a1a", display: "flex", alignItems: "center", gap: "8px" }}>
+        <span style={{ fontSize: "16px" }}>{icon}</span>
+        <h2 style={{ fontSize: "14px", fontWeight: 700, color: "#e8e8e8", margin: 0 }}>{title}</h2>
+      </div>
+      <div style={{ padding: "20px 22px 24px" }}>{children}</div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANALYTICS PAGE
+═══════════════════════════════════════════════════════════════ */
 const Analytics = () => {
   const [stats, setStats] = useState({});
   const [insights, setInsights] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [insightsVisible, setInsightsVisible] = useState(false);
 
-  useEffect(() => {
-    loadAnalytics();
-  }, []);
+  useEffect(() => { loadAnalytics(); }, []);
 
   const loadAnalytics = async () => {
+    setLoading(true);
     try {
       const { data } = await API.get("/analytics");
       setStats(data);
-
       const insightData = await API.post("/analytics/insights", data);
       setInsights(insightData.data.insights);
+      setTimeout(() => setInsightsVisible(true), 400);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  return (
-    <div className="flex flex-col gap-6">
-      {/* Header */}
-      <section className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-slate-50">
-            Analytics
-          </h1>
-          <p className="mt-1 text-sm text-slate-400 max-w-xl">
-            Visualize customer behavior, revenue performance, and AI‑generated
-            insights from your campaigns.
-          </p>
-        </div>
-      </section>
-
-      {/* High-level metrics */}
-      <section className="grid gap-4 md:grid-cols-5">
-        <MetricCard
-          label="Total Customers"
-          value={stats.totalCustomers}
-        />
-        <MetricCard
-          label="VIP Customers"
-          value={stats.vipCustomers}
-        />
-        <MetricCard
-          label="Active Customers"
-          value={stats.activeCustomers}
-        />
-        <MetricCard
-          label="Inactive Customers"
-          value={stats.inactiveCustomers}
-        />
-        <MetricCard
-          label="Revenue"
-          value={stats.totalRevenue ? `₹${stats.totalRevenue}` : "₹0"}
-          accent="emerald"
-        />
-      </section>
-
-      {/* Charts grid */}
-      <section className="grid gap-4 lg:grid-cols-2">
-        {/* Customer distribution */}
-        <div className="rounded-2xl bg-gradient-to-b from-slate-900/80 via-slate-950 to-black border border-white/10 shadow-[0_20px_60px_rgba(15,23,42,0.9)] p-4 sm:p-5">
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <h2 className="text-sm font-semibold text-slate-100">
-                Customer Distribution
-              </h2>
-              <p className="text-[11px] text-slate-400">
-                Active vs inactive customers in your CRM.
-              </p>
-            </div>
-          </div>
-          <div className="h-64">
-            <CustomerPieChart
-              active={stats.activeCustomers}
-              inactive={stats.inactiveCustomers}
-            />
-          </div>
-        </div>
-
-        {/* Revenue analytics */}
-        <div className="rounded-2xl bg-gradient-to-b from-slate-900/80 via-slate-950 to-black border border-white/10 shadow-[0_20px_60px_rgba(15,23,42,0.9)] p-4 sm:p-5">
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <h2 className="text-sm font-semibold text-slate-100">
-                Revenue Analytics
-              </h2>
-              <p className="text-[11px] text-slate-400">
-                Revenue trends across segments and time.
-              </p>
-            </div>
-          </div>
-          <div className="h-64">
-            <RevenueBarChart stats={stats} />
-          </div>
-        </div>
-      </section>
-
-      {/* AI Insights */}
-      <section className="rounded-2xl bg-gradient-to-r from-indigo-500/15 via-slate-950 to-fuchsia-500/20 border border-indigo-400/40 shadow-[0_24px_80px_rgba(79,70,229,0.9)] p-4 sm:p-5">
-        <div className="flex items-center justify-between mb-2">
-          <div>
-            <h2 className="text-sm font-semibold text-slate-50">
-              AI Insights
-            </h2>
-            <p className="text-[11px] text-slate-200">
-              Generated by the Analytics Agent based on your latest data.
-            </p>
-          </div>
-          <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-black/40 px-3 py-1 text-[10px] text-indigo-100 border border-indigo-300/40">
-            <span className="h-1.5 w-1.5 rounded-full bg-indigo-300 animate-ping" />
-            Updated on data refresh
-          </span>
-        </div>
-        <pre className="mt-2 max-h-72 overflow-y-auto whitespace-pre-wrap text-xs leading-relaxed text-slate-100/90 bg-black/25 rounded-xl p-3 border border-white/10">
-          {insights || "AI has not generated any insights yet."}
-        </pre>
-      </section>
-    </div>
-  );
-};
-
-/**
- * MetricCard: small reusable card for metrics
- */
-const MetricCard = ({ label, value, accent = "indigo" }) => {
-  const accentMap = {
-    indigo:
-      "from-indigo-500/15 via-slate-900/80 to-slate-950 border-indigo-400/40 shadow-[0_18px_55px_rgba(79,70,229,0.6)]",
-    emerald:
-      "from-emerald-500/15 via-slate-900/80 to-slate-950 border-emerald-400/40 shadow-[0_18px_55px_rgba(16,185,129,0.6)]",
+  const shimmer = {
+    background: "linear-gradient(90deg,#1a1a1a 25%,#242424 50%,#1a1a1a 75%)",
+    backgroundSize: "400px 100%", animation: "shimmer 1.6s ease-in-out infinite", borderRadius: "8px",
   };
 
-  const accentClasses = accentMap[accent] || accentMap.indigo;
-
   return (
-    <div
-      className={[
-        "rounded-2xl bg-gradient-to-br",
-        accentClasses,
-        "p-3 sm:p-4 flex flex-col justify-between hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(15,23,42,1)] transition-all duration-200 border",
-      ].join(" ")}
-    >
-      <span className="text-[11px] font-medium text-slate-200">
-        {label}
-      </span>
-      <span className="mt-1 text-lg font-semibold text-slate-50">
-        {value ?? 0}
-      </span>
-    </div>
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        @keyframes fadeUp { from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)} }
+        @keyframes shimmer { 0%{background-position:-400px 0}100%{background-position:400px 0} }
+        @keyframes glow { from{filter:drop-shadow(0 0 4px rgba(99,102,241,0.4))}to{filter:drop-shadow(0 0 12px rgba(99,102,241,0.9))} }
+        @keyframes blink { 0%,100%{opacity:1}50%{opacity:0.4} }
+        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.75)} }
+        * { box-sizing: border-box; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 4px; }
+      `}</style>
+
+      <div style={{ display: "flex" }}>
+        <Sidebar />
+        <div style={{
+          flex: 1, background: "#0a0a0a", color: "#e8e8e8", minHeight: "100vh",
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", overflowX: "hidden",
+        }}>
+
+          {/* ── Hero Banner ── */}
+          <div style={{
+            position: "relative", padding: "48px 40px 40px",
+            background: "linear-gradient(135deg,#141414 0%,#0a0a1a 50%,#0a0a0a 100%)",
+            borderBottom: "1px solid #1f1f1f", overflow: "hidden",
+          }}>
+            <div style={{
+              position: "absolute", inset: 0,
+              background: "radial-gradient(ellipse at 80% 50%,rgba(99,102,241,0.08) 0%,transparent 60%), radial-gradient(ellipse at 20% 80%,rgba(70,211,105,0.04) 0%,transparent 50%)",
+              pointerEvents: "none",
+            }} />
+            <div style={{ position: "relative" }}>
+              <p style={{ fontSize: "12px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "#6366F1", margin: "0 0 6px" }}>
+                Insights
+              </p>
+              <h1 style={{ fontSize: "clamp(24px,3vw,36px)", fontWeight: 700, letterSpacing: "-0.02em", color: "#fff", margin: "0 0 8px" }}>
+                Analytics
+              </h1>
+              <p style={{ fontSize: "14px", color: "#666", margin: 0 }}>
+                Real-time data across your customer base and campaigns
+              </p>
+            </div>
+            <span style={{
+              position: "absolute", top: "48px", right: "40px", fontSize: "12px", color: "#555", fontWeight: 500, letterSpacing: "0.04em",
+            }}>
+              {new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })}
+            </span>
+          </div>
+
+          <div style={{ padding: "32px 40px", display: "flex", flexDirection: "column", gap: "28px" }}>
+
+            {/* ── KPI Strip ── */}
+            {loading ? (
+              <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} style={{ flex: 1, minWidth: "160px", height: "84px", ...shimmer }} />
+                ))}
+              </div>
+            ) : (
+              <div style={{ display: "flex", gap: "14px", flexWrap: "wrap", animation: "fadeUp 0.3s ease both" }}>
+                <KpiCard label="Total Customers"    value={stats.totalCustomers}    icon="👥" accent="#E50914" />
+                <KpiCard label="VIP Customers"      value={stats.vipCustomers}      icon="⭐" accent="#F5A623" />
+                <KpiCard label="Active Customers"   value={stats.activeCustomers}   icon="⚡" accent="#46D369" />
+                <KpiCard label="Inactive Customers" value={stats.inactiveCustomers} icon="💤" accent="#6366F1" />
+                <KpiCard label="Total Revenue"      value={stats.totalRevenue}      icon="💰" accent="#46D369" prefix="₹" />
+              </div>
+            )}
+
+            {/* ── Charts Row ── */}
+            <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
+              <ChartCard title="Customer Distribution" icon="🥧">
+                {loading ? (
+                  <div style={{ height: "240px", ...shimmer }} />
+                ) : (
+                  <CustomerPieChart
+                    active={stats.activeCustomers}
+                    inactive={stats.inactiveCustomers}
+                  />
+                )}
+              </ChartCard>
+
+              <ChartCard title="Revenue Analytics" icon="📊">
+                {loading ? (
+                  <div style={{ height: "240px", ...shimmer }} />
+                ) : (
+                  <RevenueBarChart stats={stats} />
+                )}
+              </ChartCard>
+            </div>
+
+            {/* ── AI Insights Panel ── */}
+            <div style={{
+              background: "linear-gradient(135deg,#0d0d1a 0%,#0a0a14 100%)",
+              border: "1px solid #1e1e2e", borderRadius: "16px", overflow: "hidden",
+              position: "relative",
+              opacity: insightsVisible ? 1 : 0,
+              transform: insightsVisible ? "translateY(0)" : "translateY(14px)",
+              transition: "opacity 400ms cubic-bezier(0.16,1,0.3,1), transform 400ms cubic-bezier(0.16,1,0.3,1)",
+            }}>
+              <div style={{
+                position: "absolute", top: 0, left: 0, right: 0, height: "1px",
+                background: "linear-gradient(90deg,transparent,rgba(99,102,241,0.6),transparent)",
+              }} />
+              <div style={{
+                padding: "18px 24px 14px", borderBottom: "1px solid #1e1e2e",
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+              }}>
+                <span style={{ fontSize: "13px", fontWeight: 700, color: "#a5b4fc", letterSpacing: "0.02em", animation: "glow 2s ease-in-out infinite alternate" }}>
+                  ✦ AI Insights
+                </span>
+                <span style={{
+                  fontSize: "10px", fontWeight: 800, letterSpacing: "0.15em", color: "#46D369",
+                  background: "rgba(70,211,105,0.1)", border: "1px solid rgba(70,211,105,0.25)",
+                  padding: "3px 10px", borderRadius: "20px", animation: "blink 2s ease-in-out infinite",
+                }}>
+                  LIVE
+                </span>
+              </div>
+              <div style={{ padding: "20px 24px 28px" }}>
+                {loading || !insights ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                    {[90, 70, 85, 60].map((w, i) => (
+                      <div key={i} style={{ height: "13px", width: `${w}%`, ...shimmer }} />
+                    ))}
+                  </div>
+                ) : (
+                  <pre style={{
+                    fontFamily: "'Inter', -apple-system, sans-serif", fontSize: "14px",
+                    lineHeight: 1.8, color: "#c4c4d4", whiteSpace: "pre-wrap", margin: 0, fontWeight: 400,
+                  }}>
+                    {insights}
+                  </pre>
+                )}
+              </div>
+            </div>
+          </div>
+          <div style={{ height: "48px" }} />
+        </div>
+      </div>
+    </>
   );
 };
 
