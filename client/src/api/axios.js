@@ -1,7 +1,10 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://crm-ai-native.onrender.com/api",
+  baseURL:
+    window.location.hostname === "localhost"
+      ? "http://localhost:5000/api"
+      : "https://crm-ai-native.onrender.com/api",
 });
 
 API.interceptors.request.use((req) => {
