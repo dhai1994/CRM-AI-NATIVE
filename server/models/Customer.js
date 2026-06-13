@@ -25,12 +25,46 @@ const customerSchema = new mongoose.Schema(
     lastPurchaseDate: Date,
 
     segment: String,
+
+    // =========================
+    // CHURN FIELDS
+    // =========================
+
+    churnScore: {
+      type: Number,
+      default: 0,
+    },
+
+    churnRisk: {
+      type: String,
+      default: "LOW",
+    },
+
+    churnReason: {
+      type: String,
+      default: "",
+    },
+
+    recommendedAction: {
+      type: String,
+      default: "",
+    },
+
+    inactiveDays: {
+      type: Number,
+      default: 0,
+    },
+
+    lastChurnCalculatedAt: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-export default mongoose.model("Customer", customerSchema);
-
-
+export default mongoose.model(
+  "Customer",
+  customerSchema
+);

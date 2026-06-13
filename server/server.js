@@ -8,11 +8,10 @@ import customerRoutes from "./routes/customerRoutes.js";
 import csvRoutes from "./routes/csvRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
-import campaignRoutes
-from "./routes/campaignRoutes.js";
-import emailRoutes
-from "./routes/emailRoutes.js";
+import campaignRoutes from "./routes/campaignRoutes.js";
+import emailRoutes from "./routes/emailRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
+import churnRoutes from "./routes/churnRoutes.js";
 
 dotenv.config();
 
@@ -27,26 +26,17 @@ app.use(
 );
 
 app.use(express.json());
+
 app.use("/api/auth", authRoutes);
 app.use("/api/csv", csvRoutes);
 app.use("/api/customers", customerRoutes);
-app.use(
-  "/api/dashboard",
-  dashboardRoutes
-);
+app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/ai", aiRoutes);
-app.use(
-  "/api/campaigns",
-  campaignRoutes
-);
-app.use(
-  "/api/email",
-  emailRoutes
-);
-app.use(
-  "/api/analytics",
-  analyticsRoutes
-);
+app.use("/api/campaigns", campaignRoutes);
+app.use("/api/email", emailRoutes);
+app.use("/api/analytics", analyticsRoutes);
+app.use("/api/churn", churnRoutes);
+
 app.get("/", (req, res) => {
   res.send("CRM Backend Running");
 });

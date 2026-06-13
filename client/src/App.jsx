@@ -9,20 +9,14 @@ import Agent from "./pages/Agent";
 import Campaigns from "./pages/Campaigns";
 import Analytics from "./pages/Analytics";
 import CampaignDetails from "./pages/CampaignDetails";
+import ChurnPredictor from "./pages/ChurnPredictor";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={<Login />}
-      />
-
-      <Route
-        path="/register"
-        element={<Register />}
-      />
+      <Route path="/" element={<Login />} />
+      <Route path="/register" element={<Register />} />
 
       <Route
         path="/dashboard"
@@ -51,16 +45,14 @@ function App() {
         }
       />
 
-      
-<Route
- path="/campaign/:id"
- element={
-  <ProtectedRoute>
-   <CampaignDetails />
-  </ProtectedRoute>
- }
-/>
-      
+      <Route
+        path="/campaign/:id"
+        element={
+          <ProtectedRoute>
+            <CampaignDetails />
+          </ProtectedRoute>
+        }
+      />
 
       <Route
         path="/campaigns"
@@ -76,6 +68,15 @@ function App() {
         element={
           <ProtectedRoute>
             <Analytics />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/churn"
+        element={
+          <ProtectedRoute>
+            <ChurnPredictor />
           </ProtectedRoute>
         }
       />

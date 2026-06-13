@@ -3,9 +3,6 @@ import API from "../api/axios";
 import Sidebar from "../components/Sidebar";
 import StatCard from "../components/StatCard";
 
-/* ═══════════════════════════════════════════════════════════════
-   ANIMATED COUNTER  — counts up from 0 on mount
-═══════════════════════════════════════════════════════════════ */
 function AnimatedCounter({ value, prefix = "", duration = 1200 }) {
   const [display, setDisplay] = useState(0);
 
@@ -32,9 +29,6 @@ function AnimatedCounter({ value, prefix = "", duration = 1200 }) {
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   ENHANCED STAT CARD  — hover lift + accent radial glow
-═══════════════════════════════════════════════════════════════ */
 function EnhancedStatCard({ title, value, icon, accent }) {
   const [hovered, setHovered] = useState(false);
 
@@ -51,13 +45,13 @@ function EnhancedStatCard({ title, value, icon, accent }) {
       onMouseLeave={() => setHovered(false)}
       style={{
         flex: 1,
-        minWidth: "200px",
+        minWidth: "190px",
         display: "flex",
         alignItems: "center",
-        gap: "16px",
+        gap: "14px",
         border: `1px solid ${hovered ? "#2a2a2a" : "#1f1f1f"}`,
         borderRadius: "12px",
-        padding: "20px 24px",
+        padding: "16px 18px",
         cursor: "default",
         background: hovered
           ? `radial-gradient(ellipse at 0% 50%, ${accent}18 0%, #141414 70%)`
@@ -69,10 +63,9 @@ function EnhancedStatCard({ title, value, icon, accent }) {
         transition: "all 220ms cubic-bezier(0.16,1,0.3,1)",
       }}
     >
-      {/* Icon */}
       <div
         style={{
-          fontSize: "28px",
+          fontSize: "22px",
           lineHeight: 1,
           filter: `drop-shadow(0 0 8px ${accent})`,
         }}
@@ -80,23 +73,22 @@ function EnhancedStatCard({ title, value, icon, accent }) {
         {icon}
       </div>
 
-      {/* Text */}
       <div style={{ flex: 1 }}>
         <p
           style={{
-            fontSize: "11px",
+            fontSize: "10px",
             fontWeight: 600,
             textTransform: "uppercase",
             letterSpacing: "0.1em",
             color: "#666",
-            margin: "0 0 4px",
+            margin: "0 0 3px",
           }}
         >
           {title}
         </p>
         <p
           style={{
-            fontSize: "clamp(22px, 3vw, 32px)",
+            fontSize: "clamp(18px, 2.2vw, 24px)",
             fontWeight: 700,
             color: "#fff",
             margin: 0,
@@ -111,9 +103,6 @@ function EnhancedStatCard({ title, value, icon, accent }) {
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   HORIZONTAL SCROLL ROW  — Netflix-style
-═══════════════════════════════════════════════════════════════ */
 function HorizontalRow({ title, children }) {
   const trackRef = useRef(null);
 
@@ -124,20 +113,19 @@ function HorizontalRow({ title, children }) {
   };
 
   return (
-    <div style={{ padding: "28px 0 8px 40px" }}>
-      {/* Row header */}
+    <div style={{ padding: "22px 0 6px 34px" }}>
       <div
         style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          paddingRight: "40px",
-          marginBottom: "16px",
+          paddingRight: "34px",
+          marginBottom: "12px",
         }}
       >
         <h2
           style={{
-            fontSize: "18px",
+            fontSize: "15px",
             fontWeight: 700,
             color: "#e8e8e8",
             margin: 0,
@@ -151,13 +139,13 @@ function HorizontalRow({ title, children }) {
             onClick={() => scroll(-1)}
             aria-label="Scroll left"
             style={{
-              width: "32px",
-              height: "32px",
+              width: "28px",
+              height: "28px",
               borderRadius: "50%",
               background: "#1f1f1f",
               border: "1px solid #2a2a2a",
               color: "#e8e8e8",
-              fontSize: "18px",
+              fontSize: "15px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -175,13 +163,13 @@ function HorizontalRow({ title, children }) {
             onClick={() => scroll(1)}
             aria-label="Scroll right"
             style={{
-              width: "32px",
-              height: "32px",
+              width: "28px",
+              height: "28px",
               borderRadius: "50%",
               background: "#1f1f1f",
               border: "1px solid #2a2a2a",
               color: "#e8e8e8",
-              fontSize: "18px",
+              fontSize: "15px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -198,15 +186,14 @@ function HorizontalRow({ title, children }) {
         </div>
       </div>
 
-      {/* Scrollable track */}
       <div
         ref={trackRef}
         style={{
           display: "flex",
           gap: "12px",
           overflowX: "auto",
-          paddingRight: "40px",
-          paddingBottom: "12px",
+          paddingRight: "34px",
+          paddingBottom: "10px",
           scrollbarWidth: "none",
           msOverflowStyle: "none",
           scrollSnapType: "x mandatory",
@@ -218,20 +205,10 @@ function HorizontalRow({ title, children }) {
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   CUSTOMER CARD
-═══════════════════════════════════════════════════════════════ */
 function CustomerCard({ customer, index }) {
   const [hovered, setHovered] = useState(false);
 
-  const palette = [
-    "#E50914",
-    "#46D369",
-    "#F5A623",
-    "#4ECDC4",
-    "#9B59B6",
-    "#3498DB",
-  ];
+  const palette = ["#E50914", "#46D369", "#F5A623", "#4ECDC4", "#9B59B6", "#3498DB"];
   const accent = palette[index % palette.length];
   const initials = (customer.name || "?")
     .split(" ")
@@ -245,29 +222,23 @@ function CustomerCard({ customer, index }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        flex: "0 0 220px",
+        flex: "0 0 210px",
         borderRadius: "8px",
         overflow: "hidden",
         background: "#141414",
         border: `1px solid ${hovered ? "#333" : "#1f1f1f"}`,
         cursor: "pointer",
         scrollSnapAlign: "start",
-        transform: hovered
-          ? "scale(1.06) translateY(-5px)"
-          : "scale(1) translateY(0)",
-        boxShadow: hovered
-          ? "0 24px 64px rgba(0,0,0,0.8)"
-          : "0 4px 16px rgba(0,0,0,0.4)",
-        transition:
-          "transform 280ms cubic-bezier(0.16,1,0.3,1), box-shadow 280ms cubic-bezier(0.16,1,0.3,1), border-color 280ms cubic-bezier(0.16,1,0.3,1)",
+        transform: hovered ? "scale(1.06) translateY(-5px)" : "scale(1) translateY(0)",
+        boxShadow: hovered ? "0 24px 64px rgba(0,0,0,0.8)" : "0 4px 16px rgba(0,0,0,0.4)",
+        transition: "transform 280ms cubic-bezier(0.16,1,0.3,1), box-shadow 280ms cubic-bezier(0.16,1,0.3,1), border-color 280ms cubic-bezier(0.16,1,0.3,1)",
         zIndex: hovered ? 2 : 1,
         position: "relative",
       }}
     >
-      {/* Thumbnail */}
       <div
         style={{
-          height: "120px",
+          height: "110px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -276,17 +247,16 @@ function CustomerCard({ customer, index }) {
           overflow: "hidden",
         }}
       >
-        {/* Avatar circle */}
         <div
           style={{
-            width: "52px",
-            height: "52px",
+            width: "46px",
+            height: "46px",
             borderRadius: "50%",
             background: accent,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            fontSize: "18px",
+            fontSize: "15px",
             fontWeight: 700,
             color: "#fff",
             boxShadow: "0 4px 16px rgba(0,0,0,0.5)",
@@ -295,7 +265,6 @@ function CustomerCard({ customer, index }) {
           {initials}
         </div>
 
-        {/* VIP badge */}
         {customer.isVip && (
           <span
             style={{
@@ -304,10 +273,10 @@ function CustomerCard({ customer, index }) {
               right: "8px",
               background: "#F5A623",
               color: "#000",
-              fontSize: "9px",
+              fontSize: "8px",
               fontWeight: 800,
               letterSpacing: "0.1em",
-              padding: "3px 7px",
+              padding: "3px 6px",
               borderRadius: "4px",
               textTransform: "uppercase",
             }}
@@ -317,11 +286,10 @@ function CustomerCard({ customer, index }) {
         )}
       </div>
 
-      {/* Info */}
-      <div style={{ padding: "12px 14px 14px" }}>
+      <div style={{ padding: "10px 12px 12px" }}>
         <p
           style={{
-            fontSize: "13px",
+            fontSize: "12px",
             fontWeight: 600,
             color: "#e8e8e8",
             margin: "0 0 4px",
@@ -334,7 +302,7 @@ function CustomerCard({ customer, index }) {
         </p>
         <p
           style={{
-            fontSize: "11px",
+            fontSize: "10px",
             color: "#666",
             margin: "0 0 6px",
             whiteSpace: "nowrap",
@@ -347,7 +315,7 @@ function CustomerCard({ customer, index }) {
         {customer.totalSpend && (
           <p
             style={{
-              fontSize: "12px",
+              fontSize: "11px",
               fontWeight: 700,
               color: "#46D369",
               margin: 0,
@@ -362,9 +330,6 @@ function CustomerCard({ customer, index }) {
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   CAMPAIGN CARD
-═══════════════════════════════════════════════════════════════ */
 function CampaignCard({ campaign, index }) {
   const [hovered, setHovered] = useState(false);
 
@@ -378,43 +343,36 @@ function CampaignCard({ campaign, index }) {
   ];
 
   const statusMap = {
-    active:    { color: "#46D369", label: "Active" },
-    completed: { color: "#888",    label: "Done"   },
-    draft:     { color: "#F5A623", label: "Draft"  },
-    paused:    { color: "#E50914", label: "Paused" },
+    active: { color: "#46D369", label: "Active" },
+    completed: { color: "#888", label: "Done" },
+    draft: { color: "#F5A623", label: "Draft" },
+    paused: { color: "#E50914", label: "Paused" },
   };
   const statusKey = (campaign.status || "draft").toLowerCase();
-  const { color: dotColor, label: statusLabel } =
-    statusMap[statusKey] || statusMap.draft;
+  const { color: dotColor, label: statusLabel } = statusMap[statusKey] || statusMap.draft;
 
   return (
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        flex: "0 0 220px",
+        flex: "0 0 210px",
         borderRadius: "8px",
         overflow: "hidden",
         background: "#141414",
         border: `1px solid ${hovered ? "#333" : "#1f1f1f"}`,
         cursor: "pointer",
         scrollSnapAlign: "start",
-        transform: hovered
-          ? "scale(1.06) translateY(-5px)"
-          : "scale(1) translateY(0)",
-        boxShadow: hovered
-          ? "0 24px 64px rgba(0,0,0,0.8)"
-          : "0 4px 16px rgba(0,0,0,0.4)",
-        transition:
-          "transform 280ms cubic-bezier(0.16,1,0.3,1), box-shadow 280ms cubic-bezier(0.16,1,0.3,1), border-color 280ms cubic-bezier(0.16,1,0.3,1)",
+        transform: hovered ? "scale(1.06) translateY(-5px)" : "scale(1) translateY(0)",
+        boxShadow: hovered ? "0 24px 64px rgba(0,0,0,0.8)" : "0 4px 16px rgba(0,0,0,0.4)",
+        transition: "transform 280ms cubic-bezier(0.16,1,0.3,1), box-shadow 280ms cubic-bezier(0.16,1,0.3,1), border-color 280ms cubic-bezier(0.16,1,0.3,1)",
         zIndex: hovered ? 2 : 1,
         position: "relative",
       }}
     >
-      {/* Thumbnail */}
       <div
         style={{
-          height: "120px",
+          height: "110px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -425,20 +383,19 @@ function CampaignCard({ campaign, index }) {
       >
         <span
           style={{
-            fontSize: "36px",
+            fontSize: "30px",
             filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.6))",
           }}
         >
           📣
         </span>
 
-        {/* Status badge */}
         <span
           style={{
             position: "absolute",
             top: "8px",
             left: "8px",
-            fontSize: "10px",
+            fontSize: "9px",
             fontWeight: 600,
             letterSpacing: "0.05em",
             color: dotColor,
@@ -454,8 +411,8 @@ function CampaignCard({ campaign, index }) {
           <span
             style={{
               display: "inline-block",
-              width: "6px",
-              height: "6px",
+              width: "5px",
+              height: "5px",
               borderRadius: "50%",
               background: dotColor,
               animation: "pulse 2s ease-in-out infinite",
@@ -465,11 +422,10 @@ function CampaignCard({ campaign, index }) {
         </span>
       </div>
 
-      {/* Info */}
-      <div style={{ padding: "12px 14px 14px" }}>
+      <div style={{ padding: "10px 12px 12px" }}>
         <p
           style={{
-            fontSize: "13px",
+            fontSize: "12px",
             fontWeight: 600,
             color: "#e8e8e8",
             margin: "0 0 4px",
@@ -482,7 +438,7 @@ function CampaignCard({ campaign, index }) {
         </p>
         <p
           style={{
-            fontSize: "11px",
+            fontSize: "10px",
             color: "#666",
             margin: "0 0 6px",
             whiteSpace: "nowrap",
@@ -490,14 +446,12 @@ function CampaignCard({ campaign, index }) {
             textOverflow: "ellipsis",
           }}
         >
-          {campaign.audienceSize
-            ? `${campaign.audienceSize} recipients`
-            : "Audience TBD"}
+          {campaign.audienceSize ? `${campaign.audienceSize} recipients` : "Audience TBD"}
         </p>
         {campaign.sentCount !== undefined && (
           <p
             style={{
-              fontSize: "12px",
+              fontSize: "11px",
               fontWeight: 700,
               color: "#46D369",
               margin: 0,
@@ -511,13 +465,9 @@ function CampaignCard({ campaign, index }) {
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   SKELETON CARD  — shimmer placeholder while loading
-═══════════════════════════════════════════════════════════════ */
 function SkeletonCard() {
   const shimmerStyle = {
-    background:
-      "linear-gradient(90deg,#1a1a1a 25%,#262626 50%,#1a1a1a 75%)",
+    background: "linear-gradient(90deg,#1a1a1a 25%,#262626 50%,#1a1a1a 75%)",
     backgroundSize: "400px 100%",
     animation: "shimmer 1.6s ease-in-out infinite",
     borderRadius: "6px",
@@ -526,7 +476,7 @@ function SkeletonCard() {
   return (
     <div
       style={{
-        flex: "0 0 220px",
+        flex: "0 0 210px",
         borderRadius: "8px",
         overflow: "hidden",
         background: "#141414",
@@ -534,18 +484,15 @@ function SkeletonCard() {
         scrollSnapAlign: "start",
       }}
     >
-      <div style={{ height: "120px", ...shimmerStyle, borderRadius: 0 }} />
-      <div style={{ padding: "12px 14px 14px" }}>
-        <div style={{ height: "13px", width: "80%", marginBottom: "8px", ...shimmerStyle }} />
-        <div style={{ height: "11px", width: "60%", ...shimmerStyle }} />
+      <div style={{ height: "110px", ...shimmerStyle, borderRadius: 0 }} />
+      <div style={{ padding: "10px 12px 12px" }}>
+        <div style={{ height: "12px", width: "80%", marginBottom: "8px", ...shimmerStyle }} />
+        <div style={{ height: "10px", width: "60%", ...shimmerStyle }} />
       </div>
     </div>
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   AI RECOMMENDATION PANEL
-═══════════════════════════════════════════════════════════════ */
 function AIPanel({ recommendation }) {
   const [visible, setVisible] = useState(false);
 
@@ -559,7 +506,7 @@ function AIPanel({ recommendation }) {
   return (
     <div
       style={{
-        margin: "28px 40px 0",
+        margin: "22px 34px 0",
         background: "linear-gradient(135deg,#0d0d1a 0%,#0a0a14 100%)",
         border: "1px solid #1e1e2e",
         borderRadius: "16px",
@@ -567,11 +514,9 @@ function AIPanel({ recommendation }) {
         position: "relative",
         opacity: visible ? 1 : 0,
         transform: visible ? "translateY(0)" : "translateY(14px)",
-        transition:
-          "opacity 400ms cubic-bezier(0.16,1,0.3,1), transform 400ms cubic-bezier(0.16,1,0.3,1)",
+        transition: "opacity 400ms cubic-bezier(0.16,1,0.3,1), transform 400ms cubic-bezier(0.16,1,0.3,1)",
       }}
     >
-      {/* Top shimmer line */}
       <div
         style={{
           position: "absolute",
@@ -579,24 +524,22 @@ function AIPanel({ recommendation }) {
           left: 0,
           right: 0,
           height: "1px",
-          background:
-            "linear-gradient(90deg,transparent,rgba(99,102,241,0.6),transparent)",
+          background: "linear-gradient(90deg,transparent,rgba(99,102,241,0.6),transparent)",
         }}
       />
 
-      {/* Header */}
       <div
         style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "18px 24px 14px",
+          padding: "14px 18px 12px",
           borderBottom: "1px solid #1e1e2e",
         }}
       >
         <span
           style={{
-            fontSize: "13px",
+            fontSize: "11px",
             fontWeight: 700,
             color: "#a5b4fc",
             letterSpacing: "0.02em",
@@ -607,13 +550,13 @@ function AIPanel({ recommendation }) {
         </span>
         <span
           style={{
-            fontSize: "10px",
+            fontSize: "9px",
             fontWeight: 800,
             letterSpacing: "0.15em",
             color: "#E50914",
             background: "rgba(229,9,20,0.1)",
             border: "1px solid rgba(229,9,20,0.25)",
-            padding: "3px 10px",
+            padding: "3px 8px",
             borderRadius: "20px",
             animation: "blink 2s ease-in-out infinite",
           }}
@@ -622,14 +565,13 @@ function AIPanel({ recommendation }) {
         </span>
       </div>
 
-      {/* Content */}
-      <div style={{ padding: "20px 24px 24px" }}>
+      <div style={{ padding: "16px 18px 18px" }}>
         {recommendation ? (
           <pre
             style={{
               fontFamily: "'Inter', -apple-system, sans-serif",
-              fontSize: "14px",
-              lineHeight: 1.75,
+              fontSize: "12px",
+              lineHeight: 1.7,
               color: "#c4c4d4",
               whiteSpace: "pre-wrap",
               margin: 0,
@@ -639,18 +581,16 @@ function AIPanel({ recommendation }) {
             {recommendation}
           </pre>
         ) : (
-          /* Loading skeleton lines */
           <div>
             {[90, 70, 85, 55].map((w, i) => (
               <div
                 key={i}
                 style={{
-                  height: "13px",
+                  height: "11px",
                   width: `${w}%`,
                   borderRadius: "6px",
                   marginBottom: "10px",
-                  background:
-                    "linear-gradient(90deg,#1a1a2e 25%,#22223a 50%,#1a1a2e 75%)",
+                  background: "linear-gradient(90deg,#1a1a2e 25%,#22223a 50%,#1a1a2e 75%)",
                   backgroundSize: "400px 100%",
                   animation: "shimmer 1.6s ease-in-out infinite",
                 }}
@@ -663,9 +603,6 @@ function AIPanel({ recommendation }) {
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   MAIN DASHBOARD
-═══════════════════════════════════════════════════════════════ */
 const Dashboard = () => {
   const [stats, setStats] = useState({
     totalCustomers: 0,
@@ -710,42 +647,36 @@ const Dashboard = () => {
     }
   };
 
-  /* Time-based greeting */
   const now = new Date();
   const hour = now.getHours();
-  const greeting =
-    hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
   return (
     <>
-      {/* ── Global keyframe animations ── */}
       <style>{`
         @keyframes shimmer {
           0%   { background-position: -400px 0; }
           100% { background-position:  400px 0; }
         }
         @keyframes pulse {
-          0%, 100% { opacity: 1;   transform: scale(1);    }
-          50%       { opacity: 0.4; transform: scale(0.75); }
+          0%, 100% { opacity: 1;   transform: scale(1); }
+          50% { opacity: 0.4; transform: scale(0.75); }
         }
         @keyframes blink {
-          0%, 100% { opacity: 1;   }
-          50%       { opacity: 0.4; }
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.4; }
         }
         @keyframes glow {
-          from { filter: drop-shadow(0 0 4px  rgba(99,102,241,0.4)); }
-          to   { filter: drop-shadow(0 0 12px rgba(99,102,241,0.9)); }
+          from { filter: drop-shadow(0 0 4px rgba(99,102,241,0.4)); }
+          to { filter: drop-shadow(0 0 12px rgba(99,102,241,0.9)); }
         }
         * { box-sizing: border-box; }
-        /* Hide scrollbar on webkit for row tracks */
         .crm-row-track::-webkit-scrollbar { display: none; }
       `}</style>
 
       <div style={{ display: "flex" }}>
-        {/* ── Sidebar (unchanged) ── */}
         <Sidebar />
 
-        {/* ── Main content ── */}
         <div
           style={{
             flex: 1,
@@ -753,63 +684,55 @@ const Dashboard = () => {
             color: "#e8e8e8",
             minHeight: "100vh",
             overflowX: "hidden",
-            fontFamily:
-              "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
           }}
         >
-          {/* ════════════════════════════
-              HERO BANNER  (Uber-style)
-          ════════════════════════════ */}
           <div
             style={{
               position: "relative",
-              padding: "48px 40px 40px",
-              background:
-                "linear-gradient(135deg,#141414 0%,#1a0a0a 50%,#0a0a0a 100%)",
+              padding: "34px 34px 28px",
+              background: "linear-gradient(135deg,#141414 0%,#1a0a0a 50%,#0a0a0a 100%)",
               borderBottom: "1px solid #1f1f1f",
               overflow: "hidden",
             }}
           >
-            {/* Ambient glow */}
             <div
               style={{
                 position: "absolute",
                 inset: 0,
-                background:
-                  "radial-gradient(ellipse at 80% 50%,rgba(229,9,20,0.09) 0%,transparent 60%), radial-gradient(ellipse at 20% 80%,rgba(70,211,105,0.04) 0%,transparent 50%)",
+                background: "radial-gradient(ellipse at 80% 50%,rgba(229,9,20,0.09) 0%,transparent 60%), radial-gradient(ellipse at 20% 80%,rgba(70,211,105,0.04) 0%,transparent 50%)",
                 pointerEvents: "none",
               }}
             />
 
-            {/* Text */}
             <div style={{ position: "relative" }}>
               <p
                 style={{
-                  fontSize: "12px",
+                  fontSize: "10px",
                   fontWeight: 600,
                   letterSpacing: "0.1em",
                   textTransform: "uppercase",
                   color: "#E50914",
-                  margin: "0 0 6px",
+                  margin: "0 0 5px",
                 }}
               >
                 {greeting}
               </p>
               <h1
                 style={{
-                  fontSize: "clamp(28px, 4vw, 40px)",
+                  fontSize: "clamp(22px, 3vw, 32px)",
                   fontWeight: 700,
                   letterSpacing: "-0.02em",
-                  lineHeight: 1.1,
+                  lineHeight: 1.08,
                   color: "#fff",
-                  margin: "0 0 10px",
+                  margin: "0 0 8px",
                 }}
               >
                 Dashboard
               </h1>
               <p
                 style={{
-                  fontSize: "14px",
+                  fontSize: "12px",
                   color: "#777",
                   margin: 0,
                   maxWidth: "480px",
@@ -819,13 +742,12 @@ const Dashboard = () => {
               </p>
             </div>
 
-            {/* Date top-right */}
             <span
               style={{
                 position: "absolute",
-                top: "48px",
-                right: "40px",
-                fontSize: "12px",
+                top: "34px",
+                right: "34px",
+                fontSize: "11px",
                 color: "#555",
                 fontWeight: 500,
                 letterSpacing: "0.04em",
@@ -839,74 +761,34 @@ const Dashboard = () => {
             </span>
           </div>
 
-          {/* ════════════════════════════
-              KPI STAT CARDS
-          ════════════════════════════ */}
           <div
             style={{
               display: "flex",
-              gap: "16px",
-              padding: "32px 40px 8px",
+              gap: "12px",
+              padding: "24px 34px 6px",
               flexWrap: "wrap",
             }}
           >
-            <EnhancedStatCard
-              title="Customers"
-              value={stats.totalCustomers}
-              icon="👥"
-              accent="#E50914"
-            />
-            <EnhancedStatCard
-              title="VIP Customers"
-              value={stats.vipCustomers}
-              icon="⭐"
-              accent="#F5A623"
-            />
-            <EnhancedStatCard
-              title="Revenue"
-              value={`₹${stats.totalRevenue}`}
-              icon="💰"
-              accent="#46D369"
-            />
+            <EnhancedStatCard title="Customers" value={stats.totalCustomers} icon="👥" accent="#E50914" />
+            <EnhancedStatCard title="VIP Customers" value={stats.vipCustomers} icon="⭐" accent="#F5A623" />
+            <EnhancedStatCard title="Revenue" value={`₹${stats.totalRevenue}`} icon="💰" accent="#46D369" />
           </div>
 
-          {/* ════════════════════════════
-              RECENT CUSTOMERS  (Netflix row)
-          ════════════════════════════ */}
           <HorizontalRow title="Recent Customers">
             {recentCustomers.length > 0
-              ? recentCustomers.map((customer, i) => (
-                  <CustomerCard
-                    key={customer._id}
-                    customer={customer}
-                    index={i}
-                  />
-                ))
+              ? recentCustomers.map((customer, i) => <CustomerCard key={customer._id} customer={customer} index={i} />)
               : [...Array(6)].map((_, i) => <SkeletonCard key={i} />)}
           </HorizontalRow>
 
-          {/* ════════════════════════════
-              RECENT CAMPAIGNS  (Netflix row)
-          ════════════════════════════ */}
           <HorizontalRow title="Recent Campaigns">
             {recentCampaigns.length > 0
-              ? recentCampaigns.map((campaign, i) => (
-                  <CampaignCard
-                    key={campaign._id}
-                    campaign={campaign}
-                    index={i}
-                  />
-                ))
+              ? recentCampaigns.map((campaign, i) => <CampaignCard key={campaign._id} campaign={campaign} index={i} />)
               : [...Array(6)].map((_, i) => <SkeletonCard key={i} />)}
           </HorizontalRow>
 
-          {/* ════════════════════════════
-              AI RECOMMENDATION
-          ════════════════════════════ */}
           <AIPanel recommendation={recommendation} />
 
-          {/* Bottom spacing */}
-          <div style={{ height: "48px" }} />
+          <div style={{ height: "40px" }} />
         </div>
       </div>
     </>
