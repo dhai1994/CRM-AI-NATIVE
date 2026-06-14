@@ -19,7 +19,8 @@ function getChurnLevel(score) {
 function calculateChurn(customer) {
   const spent = Number(customer.totalSpent || 0);
   const orders = Number(customer.totalOrders || 0);
-  const inactiveDays = daysSince(customer.lastPurchaseDate);
+ const inactiveDays =
+  Number(customer.inactiveDays || 0);
 
   let score = 0;
   const reasons = [];
@@ -131,7 +132,7 @@ function ChurnCustomerCard({ customer }) {
                 color: "#fff",
                 fontWeight: 700,
                 fontSize: "14px",
-                background: `linear-gradient(135deg, ${customer.churnColor}, #111827)`,
+                background: `linear-gradient(135deg, ${getUrgencyColor(customer.urgency)}, #111827)`,
                 boxShadow: `0 8px 24px ${customer.churnGlow}`,
               }}
             >
@@ -144,10 +145,10 @@ function ChurnCustomerCard({ customer }) {
           </div>
 
           <p style={{ margin: "0 0 8px", color: "#c7cede", fontSize: "12.5px", lineHeight: 1.65 }}>
-            {customer.churnReason}
+            {customer.predictedTimeWindow}
           </p>
           <p style={{ margin: 0, color: "#8b93a7", fontSize: "12px", lineHeight: 1.6 }}>
-            Recommended action: <span style={{ color: "#fff" }}>{customer.recommendedAction}</span>
+            Recommended action: <span style={{ color: "#fff" }}>{customer.offerType}</span>
           </p>
         </div>
 
@@ -155,9 +156,9 @@ function ChurnCustomerCard({ customer }) {
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px", alignItems: "center" }}>
             <span
               style={{
-                color: customer.churnColor,
-                border: `1px solid ${customer.churnColor}40`,
-                background: `${customer.churnColor}10`,
+                color: getUrgencyColor(customer.urgency),
+                border: `1px solid ${getUrgencyColor(customer.urgency)}40`,
+                background: `${getUrgencyColor(customer.urgency)}10`,
                 padding: "6px 10px",
                 borderRadius: "999px",
                 fontSize: "10px",
@@ -166,18 +167,18 @@ function ChurnCustomerCard({ customer }) {
                 letterSpacing: "0.08em",
               }}
             >
-              {customer.churnLabel}
+              {customer.urgency}
             </span>
-            <span style={{ color: "#fff", fontWeight: 700, fontSize: "15px" }}>{customer.churnScore}%</span>
+            <span style={{ color: "#fff", fontWeight: 700, fontSize: "15px" }}>{customer.churnProbability}%</span>
           </div>
 
           <div style={{ height: "8px", borderRadius: "999px", background: "rgba(255,255,255,0.08)", overflow: "hidden", marginBottom: "12px" }}>
             <div
               style={{
-                width: `${customer.churnScore}%`,
+                width: `${customer.churnProbability}%`,
                 height: "100%",
                 borderRadius: "999px",
-                background: `linear-gradient(90deg, ${customer.churnColor}, ${customer.churnColor}aa)`,
+                background: `linear-gradient(90deg, ${getUrgencyColor(customer.urgency)}, ${getUrgencyColor(customer.urgency)}aa)`,
                 boxShadow: `0 0 20px ${customer.churnGlow}`,
               }}
             />
@@ -200,6 +201,41 @@ function ChurnCustomerCard({ customer }) {
               <p style={{ margin: 0, color: "#7b8191", fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Segment</p>
               <p style={{ margin: "6px 0 0", color: "#fff", fontWeight: 700, fontSize: "13px" }}>{customer.segment || "General"}</p>
             </div>
+            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "12px", padding: "10px" }}>
+  <p style={{ margin: 0, color: "#7b8191", fontSize: "9px", textTransform: "uppercase" }}>
+    14 Day Survival
+  </p>
+  <p style={{ margin: "6px 0 0", color: "#22c55e", fontWeight: 700 }}>
+    {customer.survival14Days}%
+  </p>
+</div>
+
+<div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "12px", padding: "10px" }}>
+  <p style={{ margin: 0, color: "#7b8191", fontSize: "9px", textTransform: "uppercase" }}>
+    30 Day Survival
+  </p>
+  <p style={{ margin: "6px 0 0", color: "#22c55e", fontWeight: 700 }}>
+    {customer.survival30Days}%
+  </p>
+</div>
+
+<div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "12px", padding: "10px" }}>
+  <p style={{ margin: 0, color: "#7b8191", fontSize: "9px", textTransform: "uppercase" }}>
+    90 Day Survival
+  </p>
+  <p style={{ margin: "6px 0 0", color: "#22c55e", fontWeight: 700 }}>
+    {customer.survival90Days}%
+  </p>
+</div>
+
+<div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "12px", padding: "10px" }}>
+  <p style={{ margin: 0, color: "#7b8191", fontSize: "9px", textTransform: "uppercase" }}>
+    180 Day Survival
+  </p>
+  <p style={{ margin: "6px 0 0", color: "#22c55e", fontWeight: 700 }}>
+    {customer.survival180Days}%
+  </p>
+</div>
           </div>
         </div>
       </div>
@@ -208,7 +244,7 @@ function ChurnCustomerCard({ customer }) {
 }
 
 const ChurnPredictor = () => {
-  const [customers, setCustomers] = useState([]);
+const [predictions, setPredictions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [report, setReport] = useState("");
   const [reportLoading, setReportLoading] = useState(false);
@@ -220,8 +256,8 @@ const ChurnPredictor = () => {
   const loadCustomers = async () => {
     try {
       setLoading(true);
-      const { data } = await API.get("/customers");
-      setCustomers(Array.isArray(data) ? data : []);
+    const { data } = await API.get("/churn/predict-future");
+      setPredictions(Array.isArray(data) ? data : []);
     } catch (error) {
       console.log(error);
     } finally {
@@ -229,17 +265,31 @@ const ChurnPredictor = () => {
     }
   };
 
-  const churnCustomers = useMemo(() => {
-    return [...customers].map(calculateChurn).sort((a, b) => b.churnScore - a.churnScore);
-  }, [customers]);
+ const churnCustomers = useMemo(() => {
+  return [...predictions].sort(
+    (a, b) => b.churnProbability - a.churnProbability
+  );
+}, [predictions]);
 
-  const summary = useMemo(() => {
-    const high = churnCustomers.filter((c) => c.churnScore >= 75).length;
-    const medium = churnCustomers.filter((c) => c.churnScore >= 45 && c.churnScore < 75).length;
-    const low = churnCustomers.filter((c) => c.churnScore < 45).length;
-    return { high, medium, low };
-  }, [churnCustomers]);
+ const summary = useMemo(() => {
+  return {
+    critical: predictions.filter(
+      p => p.urgency === "CRITICAL"
+    ).length,
 
+    high: predictions.filter(
+      p => p.urgency === "HIGH"
+    ).length,
+
+    medium: predictions.filter(
+      p => p.urgency === "MEDIUM"
+    ).length,
+
+    safe: predictions.filter(
+      p => p.urgency === "SAFE"
+    ).length,
+  };
+}, [predictions]);
   const generateReport = async () => {
     try {
       setReportLoading(true);
@@ -282,9 +332,29 @@ const ChurnPredictor = () => {
           <div style={{ padding: "24px 34px 34px", display: "flex", flexDirection: "column", gap: "18px" }}>
             <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", animation: "fadeUp 0.35s ease both" }}>
               <StatMiniCard title="Total Customers Scored" value={churnCustomers.length} accent="#6366F1" />
-              <StatMiniCard title="High Risk" value={summary.high} accent="#ef4444" />
-              <StatMiniCard title="Medium Risk" value={summary.medium} accent="#f59e0b" />
-              <StatMiniCard title="Low Risk" value={summary.low} accent="#22c55e" />
+            <StatMiniCard
+  title="Critical"
+  value={summary.critical}
+  accent="#ef4444"
+/>
+
+<StatMiniCard
+  title="High"
+  value={summary.high}
+  accent="#f97316"
+/>
+
+<StatMiniCard
+  title="Medium"
+  value={summary.medium}
+  accent="#eab308"
+/>
+
+<StatMiniCard
+  title="Safe"
+  value={summary.safe}
+  accent="#22c55e"
+/>
             </div>
 
             <div
@@ -349,3 +419,22 @@ const ChurnPredictor = () => {
 };
 
 export default ChurnPredictor;
+
+function getUrgencyColor(urgency) {
+  switch (urgency) {
+    case "CRITICAL":
+      return "#ef4444";
+
+    case "HIGH":
+      return "#f97316";
+
+    case "MEDIUM":
+      return "#eab308";
+
+    case "LOW":
+      return "#3b82f6";
+
+    default:
+      return "#22c55e";
+  }
+}

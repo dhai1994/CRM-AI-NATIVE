@@ -11,6 +11,8 @@ import Analytics from "./pages/Analytics";
 import CampaignDetails from "./pages/CampaignDetails";
 import ChurnPredictor from "./pages/ChurnPredictor";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AICopilot
+from "./pages/AICopilot";
 
 function App() {
   return (
@@ -80,6 +82,14 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+  path="/copilot"
+  element={
+    <ProtectedRoute>
+      <AICopilot />
+    </ProtectedRoute>
+  }
+/>
     </Routes>
   );
 }

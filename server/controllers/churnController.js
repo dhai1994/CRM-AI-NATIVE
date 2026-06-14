@@ -1,5 +1,6 @@
 import Customer from "../models/Customer.js";
 
+import axios from "axios";
 
 import { calculateChurn }
 from "../services/churnService.js";
@@ -7,6 +8,12 @@ from "../services/churnService.js";
 import { callOpenRouter }
 from "../services/openrouter.js";
 
+
+function daysSince(dateValue) {
+  if (!dateValue) return 999;
+  const diff = new Date() - new Date(dateValue);
+  return Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
+}
 
 
 export const getChurnPredictions = async (req, res) => {
@@ -246,4 +253,54 @@ Keep under 200 words.
       });
 
     }
+};
+
+export const predictFutureChurn = async (req, res) => {
+  try {
+    const customers = await Customer.find({ userId: req.user._id });
+
+    customers.forEach((c) => {
+  console.log(
+    c.name,
+    "lastPurchaseDate:",
+    c.lastPurchaseDate
+  );
+});
+
+    const input = customers.map((c) => ({
+      _id: c._id,
+      inactiveDays: daysSince(c.lastPurchaseDate),
+      totalOrders: c.totalOrders || 0,
+      totalSpent:  c.totalSpent || 0,
+    }));
+const { data } = await axios.post(
+  `${process.env.ML_SERVICE_URL}/predict`,
+  { customers: input }
+);
+    // Merge predictions with customer names/emails
+   const merged = data.map((pred) => {
+  const cust = customers.find(
+    (c) => String(c._id) === String(pred._id)
+  );
+
+  return {
+    ...pred,
+
+    name: cust?.name,
+    email: cust?.email,
+    segment: cust?.segment,
+
+    totalOrders: cust?.totalOrders || 0,
+    totalSpent: cust?.totalSpent || 0,
+
+    inactiveDays: daysSince(
+      cust?.lastPurchaseDate
+    ),
+  };
+});
+
+    res.json(merged);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };

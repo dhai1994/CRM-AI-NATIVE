@@ -6,6 +6,7 @@ import {
   getChurnSummary,
   refreshChurnScores,
   generateExecutiveReport,
+  predictFutureChurn ,
 } from "../controllers/churnController.js";
 
 const router = express.Router();
@@ -29,5 +30,7 @@ router.post(
   protect,
   generateExecutiveReport
 );
+
+router.get("/predict-future", protect, predictFutureChurn);
 
 export default router;

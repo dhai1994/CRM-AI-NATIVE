@@ -7,6 +7,12 @@ const NAV_ITEMS = [
   { to: "/campaigns", label: "Campaigns", icon: "📢", accent: "#2563EB" },
   { to: "/analytics", label: "Analytics", icon: "📈", accent: "#46D369" },
   { to: "/churn", label: "Churn AI", icon: "🧠", accent: "#F43F5E" },
+  {
+  to: "/copilot",
+  label: "AI Copilot",
+  icon: "🧑‍💼",
+  accent: "#8B5CF6",
+},
 ];
 
 function LogoMark() {

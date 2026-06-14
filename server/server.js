@@ -13,6 +13,9 @@ import emailRoutes from "./routes/emailRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
 import churnRoutes from "./routes/churnRoutes.js";
 
+import copilotRoutes
+from "./routes/copilotRoutes.js";
+
 dotenv.config();
 
 const app = express();
@@ -36,6 +39,10 @@ app.use("/api/campaigns", campaignRoutes);
 app.use("/api/email", emailRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/churn", churnRoutes);
+app.use(
+  "/api/copilot",
+  copilotRoutes
+);
 
 app.get("/", (req, res) => {
   res.send("CRM Backend Running");

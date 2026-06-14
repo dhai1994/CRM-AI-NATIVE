@@ -81,7 +81,7 @@ const Customers = () => {
   const fileRef = useRef(null);
 
   const [form, setForm] = useState({
-    name: "", email: "", phone: "", totalSpent: "", totalOrders: "", segment: "",
+    name: "", email: "", phone: "", totalSpent: "", totalOrders: "", segment: "",  lastPurchaseDate: "",
   });
 
   useEffect(() => { fetchCustomers(); }, []);
@@ -103,7 +103,7 @@ const Customers = () => {
     setAdding(true);
     try {
       await API.post("/customers", form);
-      setForm({ name: "", email: "", phone: "", totalSpent: "", totalOrders: "", segment: "" });
+      setForm({ name: "", email: "", phone: "", totalSpent: "", totalOrders: "", segment: "" ,lastPurchaseDate: ""});
       setShowForm(false);
       fetchCustomers();
       showToast("Customer added successfully");
@@ -257,6 +257,7 @@ const Customers = () => {
                     <Field label="Total Spent (₹)" placeholder="25000" value={form.totalSpent} onChange={(e) => setForm({ ...form, totalSpent: e.target.value })} />
                     <Field label="Total Orders" placeholder="12" value={form.totalOrders} onChange={(e) => setForm({ ...form, totalOrders: e.target.value })} />
                     <Field label="Segment" placeholder="VIP / High / Medium / Low" value={form.segment} onChange={(e) => setForm({ ...form, segment: e.target.value })} />
+                    <Field label="Last Purchase Date" type="date" value={form.lastPurchaseDate} onChange={(e) =>setForm({...form,lastPurchaseDate: e.target.value,})}/>
                   </div>
                   <button
                     type="submit"
